@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px;
+      margin: 0;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #4285F4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    #status {
+      margin-top: 10px;
+      color: #d32f2f;
+      min-height: 20px;
+    }
+    .g-recaptcha {
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Contact Us</h2>
+    <form id="contact-form">
+      <input type="text" name="from_name" placeholder="Your Name" required>
+      <input type="email" name="reply_to" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+      
+      <!-- Updated reCAPTCHA with your new site key -->
+      <div class="g-recaptcha" 
+           data-sitekey="6LdGpxkrAAAAABBQVphVFsrprq0Lh1PB7t12w4ez"></div>
+      
+      <button type="submit" id="submit-btn">Send Message</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    // Initialize EmailJS
+    emailjs.init("5DPgO_h7wRm5p55zu");
+    
+    // Form submission handler
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const statusElement = document.getElementById("status");
+      
+      // Verify reCAPTCHA
+      if (!grecaptcha.getResponse()) {
+        statusElement.innerText = "Please complete the reCAPTCHA verification.";
+        return;
+      }
+      
+      statusElement.innerText = "Sending...";
+      statusElement.style.color = "#4285F4";
+      
+      // Send form via EmailJS
+      emailjs.sendForm('service_lk4yqic', 'template_g1ofblv', this)
+        .then(() => {
+          statusElement.innerText = "✓ Message sent successfully!";
+          statusElement.style.color = "#388E3C";
+          this.reset();
+          grecaptcha.reset();
+        })
+        .catch((error) => {
+          statusElement.innerText = "Error: " + (error.text || "Failed to send message");
+          statusElement.style.color = "#d32f2f";
+          console.error("EmailJS Error:", error);
+        });
+    });
+  </script>
+</body>
+</html>
